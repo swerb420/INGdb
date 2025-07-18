@@ -18,14 +18,16 @@ This project ingests price and social sentiment data, builds features, trains a 
    ```bash
    pip install -r requirements.txt
    ```
-3. Configure environment variables. You can place them in a `.env` file in the project root:
+3. Configure environment variables. Copy `.env.example` to `.env` and fill in your credentials:
    ```bash
-   DATABASE_URL=postgresql://localhost/trading_intelligence
-   ALPHA_VANTAGE_API_KEY=<your api key>
-   FRED_API_KEY=<optional fred api key>
-   REDDIT_CLIENT_ID=<reddit client id>
-   REDDIT_CLIENT_SECRET=<reddit client secret>
+   cp .env.example .env
    ```
+   Then edit `.env` with values for:
+   - `DATABASE_URL`
+   - `ALPHA_VANTAGE_API_KEY`
+   - `FRED_API_KEY`
+   - `REDDIT_CLIENT_ID`
+   - `REDDIT_CLIENT_SECRET`
 
 ## Usage
 ### Ingestion
