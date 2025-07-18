@@ -9,8 +9,8 @@ model training and optimization.
 engines available in `torch.backends.quantized.supported_engines`.
 If `fbgemm` is supported it will be used; otherwise `qnnpack` is selected.
 The chosen backend is printed when running the script.
-=======
-This project ingests price and social sentiment data, builds features, trains a model and exposes an inference loop.  
+
+This project ingests price and social sentiment data, builds features, trains a model and exposes an inference loop.
 
 ## Setup
 1. Install Python 3 and `pip`.
