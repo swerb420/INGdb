@@ -7,6 +7,7 @@ import torch
 import torch.nn.utils.prune as prune
 import torch.quantization
 
+from .logging_utils import setup_logging
 from .modeling import SimpleLSTM
 from .logging_utils import setup_logging
 
