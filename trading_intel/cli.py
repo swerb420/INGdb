@@ -1,42 +1,32 @@
 #!/usr/bin/env python3
-import subprocess, sys, shutil
-from config import PROJECT_DIR
+import subprocess, sys, os, logging
+from config import LOG_FILE
 
-def _check_cron():
-    if not shutil.which("crontab"):
-        raise EnvironmentError("'crontab' command not found. Is cron installed?")
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    filename=LOG_FILE if LOG_FILE else None,
+)
+logger = logging.getLogger(__name__)
 
-def start(path=None):
-    _check_cron()
-    path = path or PROJECT_DIR
-    current = subprocess.run(["crontab", "-l"], capture_output=True, text=True)
-    cron = current.stdout if current.returncode == 0 else ""
-    entry = f"@hourly cd {path} && python inference.py >> inference.log 2>&1"
-    if entry not in cron:
-        if cron and not cron.endswith("\n"):
-            cron += "\n"
-        cron += entry + "\n"
-    subprocess.run(["crontab", "-"], input=cron, text=True, check=True)
-    print("✅ Scheduled hourly inference (crontab added).")
+def start():
+    subprocess.run(
+        "(crontab -l 2>/dev/null; echo '@hourly cd ~/trading_intel && python inference.py >> inference.log 2>&1') | crontab -",
+        shell=True,
+    )
+    logger.info("\u2705 Scheduled hourly inference (crontab added).")
 
 def stop():
-    _check_cron()
-    current = subprocess.run(["crontab", "-l"], capture_output=True, text=True)
-    cron = current.stdout if current.returncode == 0 else ""
-    new_cron = "\n".join(
-        line for line in cron.splitlines() if "inference.py" not in line
-    )
-    subprocess.run(["crontab", "-"], input=new_cron + "\n", text=True, check=True)
-    print("🛑 Stopped hourly inference.")
+    subprocess.run("crontab -l | grep -v 'inference.py' | crontab -", shell=True)
+    logger.info("\U0001F6D1 Stopped hourly inference.")
 
 def status():
-    _check_cron()
-    out = subprocess.run(["crontab", "-l"], capture_output=True, text=True, check=True)
-    print("📋 Crontab:\n", out.stdout)
+    out = subprocess.run("crontab -l", shell=True, capture_output=True, text=True)
+    logger.info("\U0001F4CB Crontab:\n%s", out.stdout)
 
 if __name__=="__main__":
     if len(sys.argv)<2:
-        print("usage: cli.py [start|stop|status] [path]")
+        logger.error("usage: cli.py [start|stop|status]")
     elif sys.argv[1]=="start":
         start(sys.argv[2] if len(sys.argv) > 2 else None)
     elif sys.argv[1]=="stop":

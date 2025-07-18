@@ -1,8 +1,15 @@
-import torch, torch.nn as nn
+import torch, torch.nn as nn, logging
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from config import DATABASE_URL
+from config import DATABASE_URL, LOG_FILE
 import sqlalchemy
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    filename=LOG_FILE if LOG_FILE else None,
+)
+logger = logging.getLogger(__name__)
 
 engine = sqlalchemy.create_engine(DATABASE_URL)
 
@@ -27,9 +34,10 @@ def train():
         model.train()
         optimizer.zero_grad()
         loss = criterion(model(X_train).squeeze(), y_train)
-        loss.backward(); optimizer.step()
+        loss.backward()
+        optimizer.step()
     torch.save(model.state_dict(), "lstm.pth")
-    print("🎉 Model trained, loss:", loss.item())
+    logger.info("\U0001F389 Model trained, loss: %s", loss.item())
 
 if __name__ == "__main__":
     train()
