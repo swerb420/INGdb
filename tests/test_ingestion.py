@@ -1,9 +1,6 @@
 import os
-import sys
 
 import pandas as pd
-
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))  # noqa: E402
 os.environ.setdefault("ALPHA_VANTAGE_API_KEY", "test")
 os.environ.setdefault("ALPHAVANTAGE_API_KEY", "test")
 import importlib  # noqa: E402
