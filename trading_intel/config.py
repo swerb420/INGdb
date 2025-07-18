@@ -9,3 +9,6 @@ API_KEYS = {
     "REDDIT_CLIENT_ID": os.getenv("REDDIT_CLIENT_ID", ""),
     "REDDIT_CLIENT_SECRET": os.getenv("REDDIT_CLIENT_SECRET", ""),
 }
+
+# Optional log file path for logging.basicConfig
+LOG_FILE = os.getenv("LOG_FILE", "")
