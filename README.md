@@ -63,3 +63,19 @@ python trading_intel/cli.py start   # add to crontab
 python trading_intel/cli.py stop    # remove from crontab
 ```
 
+## Development
+
+### Formatting
+Run `pre-commit` to automatically format and lint the code:
+
+```bash
+pre-commit run --all-files
+```
+
+### Testing
+Execute the unit tests with `pytest`:
+
+```bash
+pytest
+```
+
