@@ -5,8 +5,6 @@ from datetime import datetime
 import pandas as pd
 import requests
 import sqlalchemy
-from alpha_vantage.timeseries import TimeSeries
-from praw import Reddit
 from web3 import Web3
 
 from .config import API_KEYS, DATABASE_URL, validate_env
