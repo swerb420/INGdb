@@ -3,12 +3,13 @@ import logging
 import subprocess
 import sys
 from pathlib import Path
+
 from .logging_utils import setup_logging
 
 logger = logging.getLogger(__name__)
 
 
-def start():
+def start() -> None:
     project_dir = Path(__file__).resolve().parent
     cmd = (
         "(crontab -l 2>/dev/null; echo '@hourly cd "
@@ -19,13 +20,13 @@ def start():
     logger.info("\u2705 Scheduled hourly inference (crontab added).")
 
 
-def stop():
+def stop() -> None:
     cmd = "crontab -l | grep -v 'trading_intel.inference' | crontab -"
     subprocess.run(cmd, shell=True)
     logger.info("\U0001f6d1 Stopped hourly inference.")
 
 
-def status():
+def status() -> None:
     out = subprocess.run(
         "crontab -l",
         shell=True,
@@ -35,13 +36,17 @@ def status():
     logger.info("\U0001f4cb Crontab:\n%s", out.stdout)
 
 
-if __name__ == "__main__":
+def main(argv: list[str] | None = None) -> int:
+    """Entry point for the command line interface."""
     setup_logging()
-    if len(sys.argv) < 2:
+    args = sys.argv[1:] if argv is None else argv
+    if not args:
         logger.error("usage: cli.py [start|stop|status]")
-    elif sys.argv[1] == "start":
-        start(sys.argv[2] if len(sys.argv) > 2 else None)
-    elif sys.argv[1] == "stop":
+        return 1
+    cmd = args[0]
+    if cmd == "start":
+        start()
+    elif cmd == "stop":
         stop()
     elif cmd == "status":
         status()

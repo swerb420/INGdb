@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 engine = sqlalchemy.create_engine(DATABASE_URL)
 lstm_path = Path(__file__).resolve().parent / "lstm.pth"
+range = range
 
 
 class SimpleLSTM(nn.Module):
