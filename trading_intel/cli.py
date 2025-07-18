@@ -28,7 +28,7 @@ if __name__=="__main__":
     if len(sys.argv)<2:
         logger.error("usage: cli.py [start|stop|status]")
     elif sys.argv[1]=="start":
-        start()
+        start(sys.argv[2] if len(sys.argv) > 2 else None)
     elif sys.argv[1]=="stop":
         stop()
     else:
