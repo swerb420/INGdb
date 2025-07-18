@@ -5,14 +5,9 @@ import torch
 import torch.nn.utils.prune as prune
 import torch.quantization
 
-from .config import LOG_FILE
+from .logging_utils import setup_logging
 from .modeling import SimpleLSTM
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    filename=LOG_FILE if LOG_FILE else None,
-)
 logger = logging.getLogger(__name__)
 
 base_dir = Path(__file__).resolve().parent
