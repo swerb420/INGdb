@@ -52,25 +52,25 @@ source build of one or both packages.
 ### Ingestion
 Downloads crypto, stock, on-chain and reddit data and writes them to the database:
 ```bash
-python trading_intel/ingestion.py
+python -m trading_intel.ingestion
 ```
 
 ### Feature Generation
 Creates engineered features from the ingested data:
 ```bash
-python trading_intel/features.py
+python -m trading_intel.features
 ```
 
 ### Training
 Trains a simple LSTM on the generated features and saves `lstm.pth`:
 ```bash
-python trading_intel/modeling.py
+python -m trading_intel.modeling
 ```
 
 ### Optimization
 Prunes and quantizes the model and exports `lstm_model.onnx`:
 ```bash
-python trading_intel/optimize.py
+python -m trading_intel.optimize
 ```
 
 ### Inference
