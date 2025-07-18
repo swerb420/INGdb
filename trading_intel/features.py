@@ -5,7 +5,7 @@ import sqlalchemy
 from sqlalchemy.exc import DatabaseError
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
-from .config import DATABASE_URL
+from .config import DATABASE_URL, validate_env
 from .logging_utils import setup_logging
 
 logger = logging.getLogger(__name__)
@@ -46,5 +46,6 @@ def create_features():
 
 
 if __name__ == "__main__":
+    validate_env()
     setup_logging()
     create_features()
