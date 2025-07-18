@@ -1,5 +1,3 @@
-import os
-
 import importlib  # noqa: E402
 
 import pytest  # noqa: E402

@@ -7,19 +7,18 @@ import onnxruntime as ort
 import pandas as pd
 import sqlalchemy
 
-from .config import DATABASE_URL, LOG_FILE
+from .config import DATABASE_URL
 from .features import create_features
 from .ingestion import fetch_crypto, fetch_eth_chain, fetch_reddit, fetch_stock
+from .logging_utils import setup_logging
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    filename=LOG_FILE if LOG_FILE else None,
-)
 logger = logging.getLogger(__name__)
 
 engine = sqlalchemy.create_engine(DATABASE_URL)
 onnx_path = Path(__file__).resolve().parent / "lstm_model.onnx"
+if not onnx_path.exists():
+    logger.error("ONNX model not found at %s", onnx_path)
+    raise SystemExit(1)
 sess = ort.InferenceSession(str(onnx_path))
 
 
@@ -44,4 +43,5 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    setup_logging()
     main()

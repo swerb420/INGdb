@@ -7,13 +7,9 @@ import torch
 import torch.nn as nn
 from sklearn.model_selection import train_test_split
 
-from .config import DATABASE_URL, LOG_FILE
+from .config import DATABASE_URL
+from .logging_utils import setup_logging
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    filename=LOG_FILE if LOG_FILE else None,
-)
 logger = logging.getLogger(__name__)
 
 engine = sqlalchemy.create_engine(DATABASE_URL)
@@ -53,4 +49,5 @@ def train():
 
 
 if __name__ == "__main__":
+    setup_logging()
     train()

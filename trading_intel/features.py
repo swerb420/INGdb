@@ -2,15 +2,12 @@ import logging
 
 import pandas as pd
 import sqlalchemy
+from sqlalchemy.exc import DatabaseError
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
-from .config import DATABASE_URL, LOG_FILE
+from .config import DATABASE_URL
+from .logging_utils import setup_logging
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    filename=LOG_FILE if LOG_FILE else None,
-)
 logger = logging.getLogger(__name__)
 
 
@@ -34,7 +31,11 @@ def create_features():
           ON DATE_TRUNC('hour', p.timestamp) = DATE_TRUNC('hour', r.timestamp)
         ORDER BY p.timestamp
     """
-    df = pd.read_sql(query, engine)
+    try:
+        df = pd.read_sql(query, engine)
+    except DatabaseError as exc:  # tables may not exist
+        logger.error("Failed to read tables for features: %s", exc)
+        return pd.DataFrame()
     df["hour"] = df.timestamp.dt.hour
     df["price_diff"] = df.price.pct_change()
     df["ema_12"] = df.price.ewm(span=12).mean()
@@ -45,4 +46,5 @@ def create_features():
 
 
 if __name__ == "__main__":
+    setup_logging()
     create_features()

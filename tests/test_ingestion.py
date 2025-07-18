@@ -1,8 +1,8 @@
 import os
 
 import pandas as pd
+
 os.environ.setdefault("ALPHA_VANTAGE_API_KEY", "test")
-os.environ.setdefault("ALPHAVANTAGE_API_KEY", "test")
 import importlib  # noqa: E402
 
 import trading_intel.config as config  # noqa: E402
