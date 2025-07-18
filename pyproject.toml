@@ -7,6 +7,7 @@ name = "trading_intel"
 version = "0.1.0"
 description = "Trading intelligence scripts"
 readme = "README.md"
+license = {file = "LICENSE"}
 requires-python = ">=3.8"
 
 # runtime dependencies
@@ -27,6 +28,9 @@ dependencies = [
     "onnxruntime",
     "pytest",
 ]
+
+[project.scripts]
+ti-cli = "trading_intel.cli:main"
 
 [tool.setuptools]
 packages = ["trading_intel"]
