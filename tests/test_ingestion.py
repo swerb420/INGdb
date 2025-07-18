@@ -25,11 +25,10 @@ def test_fetch_crypto_error(monkeypatch):
 
 
 def test_fetch_stock_error(monkeypatch):
-    class DummyTS:
-        def get_intraday(self, *args, **kwargs):
-            raise RuntimeError("fail")
+    def fail(*args, **kwargs):
+        raise RuntimeError("fail")
 
-    monkeypatch.setattr(ingestion, "ts", DummyTS())
+    monkeypatch.setattr(ingestion.requests, "get", fail)
     df = ingestion.fetch_stock()
     assert isinstance(df, pd.DataFrame)
     assert df.empty

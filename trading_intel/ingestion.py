@@ -1,4 +1,5 @@
 import logging
+import time
 from datetime import datetime
 
 import pandas as pd
@@ -62,77 +63,140 @@ def fetch_crypto(coin: str = "bitcoin", vs: str = "usd") -> pd.DataFrame:
 # Stocks
 def fetch_stock(symbol: str = "AAPL") -> pd.DataFrame:
     """Fetch hourly stock data using Alpha Vantage."""
-    try:
-        df, _ = ts.get_intraday(symbol, interval="60min", outputsize="compact")
-        df.reset_index(inplace=True)
-        df.rename(
-            columns={
-                "date": "timestamp",
-                "open": "open",
-                "high": "high",
-                "low": "low",
-                "close": "close",
-                "volume": "volume",
-            },
-            inplace=True,
-        )
-        df["symbol"] = symbol
-        df["type"] = "stock"
-        df.to_sql("price_data", engine, if_exists="append", index=False)
-        logger.info("Fetched stock data for %s", symbol)
-        return df
-    except Exception as exc:  # noqa: BLE001
-        _handle_error(f"Failed to fetch stock data for {symbol}", exc)
-        return pd.DataFrame()
+    url = "https://www.alphavantage.co/query"
+    params = {
+        "function": "TIME_SERIES_INTRADAY",
+        "symbol": symbol,
+        "interval": "60min",
+        "apikey": API_KEYS["ALPHA_VANTAGE"],
+        "outputsize": "compact",
+    }
+    for attempt in range(3):
+        try:
+            resp = requests.get(url, params=params, timeout=15)
+            resp.raise_for_status()
+            data = resp.json()["Time Series (60min)"]
+            df = (
+                pd.DataFrame.from_dict(data, orient="index")
+                .rename(
+                    columns={
+                        "1. open": "open",
+                        "2. high": "high",
+                        "3. low": "low",
+                        "4. close": "close",
+                        "5. volume": "volume",
+                    }
+                )
+                .reset_index()
+                .rename(columns={"index": "timestamp"})
+            )
+            df["timestamp"] = pd.to_datetime(df["timestamp"])
+            df["symbol"] = symbol
+            df["type"] = "stock"
+            df.to_sql("price_data", engine, if_exists="append", index=False)
+            logger.info("Fetched stock data for %s", symbol)
+            return df
+        except Exception as exc:  # noqa: BLE001
+            logger.error(
+                "Attempt %d failed to fetch stock data for %s: %s",
+                attempt + 1,
+                symbol,
+                exc,
+            )
+            time.sleep(2**attempt)
+    _handle_error(
+        f"Failed to fetch stock data for {symbol}",
+        Exception("max retries"),
+    )
+    return pd.DataFrame()
 
 
 # On-chain (Ethereum)
 def fetch_eth_chain() -> pd.DataFrame:
     """Fetch the latest Ethereum block information."""
-    try:
-        w3 = Web3(Web3.HTTPProvider("https://cloudflare-eth.com"))
-        block = w3.eth.get_block("latest")
-        df = pd.DataFrame(
-            [
-                {
-                    **dict(block),
-                    "timestamp": datetime.utcfromtimestamp(block.timestamp),
-                    "symbol": "ETH",
-                    "type": "onchain",
-                }
-            ]
-        )
-        df.to_sql("onchain_data", engine, if_exists="append", index=False)
-        logger.info("Fetched latest Ethereum block")
-        return df
-    except Exception as exc:  # noqa: BLE001
-        _handle_error("Failed to fetch Ethereum block", exc)
-        return pd.DataFrame()
+    for attempt in range(3):
+        try:
+            w3 = Web3(
+                Web3.HTTPProvider(
+                    "https://cloudflare-eth.com",
+                    request_kwargs={"timeout": 15},
+                )
+            )
+            block = w3.eth.get_block("latest")
+            ts = datetime.utcfromtimestamp(block.timestamp)
+            df = pd.DataFrame(
+                [
+                    {
+                        **dict(block),
+                        "timestamp": ts,
+                        "symbol": "ETH",
+                        "type": "onchain",
+                    }
+                ]
+            )
+            df.to_sql("onchain_data", engine, if_exists="append", index=False)
+            logger.info("Fetched latest Ethereum block")
+            return df
+        except Exception as exc:  # noqa: BLE001
+            logger.error(
+                "Attempt %d failed to fetch Ethereum block: %s",
+                attempt + 1,
+                exc,
+            )
+            time.sleep(2**attempt)
+    _handle_error(
+        "Failed to fetch Ethereum block",
+        Exception("max retries"),
+    )
+    return pd.DataFrame()
 
 
 # Reddit
 def fetch_reddit(sub: str = "CryptoCurrency", limit: int = 50) -> pd.DataFrame:
     """Fetch recent Reddit submissions from ``sub``."""
-    try:
-        posts = reddit.subreddit(sub).new(limit=limit)
-        df = pd.DataFrame(
-            [
-                {
-                    "id": p.id,
-                    "timestamp": datetime.utcfromtimestamp(p.created_utc),
-                    "title": p.title,
-                    "selftext": p.selftext,
-                    "sub": sub,
-                }
-                for p in posts
-            ]
-        )
-        df.to_sql("reddit_data", engine, if_exists="append", index=False)
-        logger.info("Fetched %d Reddit posts from %s", len(df), sub)
-        return df
-    except Exception as exc:  # noqa: BLE001
-        _handle_error(f"Failed to fetch Reddit posts from {sub}", exc)
-        return pd.DataFrame()
+    url = f"https://www.reddit.com/r/{sub}/new.json"
+    headers = {"User-Agent": "ti-app"}
+    params = {"limit": limit}
+    for attempt in range(3):
+        try:
+            resp = requests.get(
+                url,
+                headers=headers,
+                params=params,
+                timeout=15,
+            )
+            resp.raise_for_status()
+            posts = resp.json()["data"]["children"]
+            df = pd.DataFrame(
+                [
+                    {
+                        "id": p["data"]["id"],
+                        "timestamp": datetime.utcfromtimestamp(
+                            p["data"]["created_utc"]
+                        ),
+                        "title": p["data"]["title"],
+                        "selftext": p["data"].get("selftext", ""),
+                        "sub": sub,
+                    }
+                    for p in posts
+                ]
+            )
+            df.to_sql("reddit_data", engine, if_exists="append", index=False)
+            logger.info("Fetched %d Reddit posts from %s", len(df), sub)
+            return df
+        except Exception as exc:  # noqa: BLE001
+            logger.error(
+                "Attempt %d failed to fetch Reddit posts from %s: %s",
+                attempt + 1,
+                sub,
+                exc,
+            )
+            time.sleep(2**attempt)
+    _handle_error(
+        f"Failed to fetch Reddit posts from {sub}",
+        Exception("max retries"),
+    )
+    return pd.DataFrame()
 
 
 if __name__ == "__main__":
