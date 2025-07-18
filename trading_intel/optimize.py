@@ -6,6 +6,7 @@ import torch.nn.utils.prune as prune
 import torch.quantization
 
 from .modeling import SimpleLSTM
+from .logging_utils import setup_logging
 
 logger = logging.getLogger(__name__)
 setup_logging()
@@ -13,7 +14,7 @@ setup_logging()
 base_dir = Path(__file__).resolve().parent
 lstm_path = base_dir / "lstm.pth"
 if not lstm_path.exists():
-    logger.error("Model state not found at %s", lstm_path)
+    logger.error("LSTM state not found at %s", lstm_path)
     raise SystemExit(1)
 state = torch.load(lstm_path)
 
