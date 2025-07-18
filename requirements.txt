@@ -3,7 +3,6 @@ numpy
 sqlalchemy
 psycopg2-binary
 requests
-ccxt
 alpha_vantage
 praw
 web3
@@ -13,3 +12,8 @@ vaderSentiment
 scikit-learn
 torch
 onnxruntime
+pytest
+black
+flake8
+isort
+pre-commit

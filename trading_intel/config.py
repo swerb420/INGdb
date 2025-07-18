@@ -1,16 +1,24 @@
 import os
+
 from dotenv import load_dotenv
 
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://localhost/trading_intelligence")
-PROJECT_DIR = os.getenv("TRADING_INTEL_DIR", os.path.dirname(os.path.abspath(__file__)))
+DATABASE_URL = os.getenv(
+    "DATABASE_URL",
+    "postgresql://localhost/trading_intelligence",
+)
+PROJECT_DIR = os.getenv(
+    "TRADING_INTEL_DIR",
+    os.path.dirname(os.path.abspath(__file__)),
+)
 API_KEYS = {
     "ALPHA_VANTAGE": os.getenv("ALPHA_VANTAGE_API_KEY", ""),
     "FRED": os.getenv("FRED_API_KEY", ""),
     "REDDIT_CLIENT_ID": os.getenv("REDDIT_CLIENT_ID", ""),
     "REDDIT_CLIENT_SECRET": os.getenv("REDDIT_CLIENT_SECRET", ""),
 }
+
 
 def validate_env() -> None:
     """Ensure all critical environment variables are present.
@@ -38,7 +46,6 @@ def validate_env() -> None:
             "Set them in your environment or in a '.env' file."
         )
 
-=======
+
 # Optional log file path for logging.basicConfig
 LOG_FILE = os.getenv("LOG_FILE", "")
-
