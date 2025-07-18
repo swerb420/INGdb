@@ -23,6 +23,7 @@ sess = ort.InferenceSession(str(onnx_path))
 
 
 def main() -> None:
+    """Run the hourly inference loop."""
     while True:
         t0 = time.time()
         fetch_crypto()
