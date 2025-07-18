@@ -20,6 +20,9 @@ logger = logging.getLogger(__name__)
 
 engine = sqlalchemy.create_engine(DATABASE_URL)
 onnx_path = Path(__file__).resolve().parent / "lstm_model.onnx"
+if not onnx_path.exists():
+    logger.error("ONNX model not found at %s", onnx_path)
+    raise SystemExit(1)
 sess = ort.InferenceSession(str(onnx_path))
 
 while True:
