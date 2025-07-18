@@ -3,7 +3,6 @@ import logging
 import subprocess
 import sys
 from pathlib import Path
-
 from .logging_utils import setup_logging
 
 logger = logging.getLogger(__name__)
@@ -44,5 +43,13 @@ if __name__ == "__main__":
         start(sys.argv[2] if len(sys.argv) > 2 else None)
     elif sys.argv[1] == "stop":
         stop()
-    else:
+    elif cmd == "status":
         status()
+    else:
+        print(f"unknown command: {cmd}", file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

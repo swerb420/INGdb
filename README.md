@@ -78,10 +78,12 @@ Runs an hourly loop of data ingestion, feature creation and ONNX inference:
 ```bash
 python trading_intel/inference.py
 ```
-You can also schedule this loop via the CLI:
+You can also schedule this loop via the CLI. After installing the package in
+editable mode with `pip install -e .`, use the `ti-cli` entry point:
 ```bash
-python trading_intel/cli.py start   # add to crontab
-python trading_intel/cli.py stop    # remove from crontab
+ti-cli start    # add to crontab
+ti-cli stop     # remove from crontab
+ti-cli status   # show current crontab
 ```
 
 ## Development
