@@ -2,6 +2,7 @@ import logging
 
 import pandas as pd
 import sqlalchemy
+from sqlalchemy.exc import DatabaseError
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 from .config import DATABASE_URL
@@ -30,7 +31,11 @@ def create_features():
           ON DATE_TRUNC('hour', p.timestamp) = DATE_TRUNC('hour', r.timestamp)
         ORDER BY p.timestamp
     """
-    df = pd.read_sql(query, engine)
+    try:
+        df = pd.read_sql(query, engine)
+    except DatabaseError as exc:  # tables may not exist
+        logger.error("Failed to read tables for features: %s", exc)
+        return pd.DataFrame()
     df["hour"] = df.timestamp.dt.hour
     df["price_diff"] = df.price.pct_change()
     df["ema_12"] = df.price.ewm(span=12).mean()
