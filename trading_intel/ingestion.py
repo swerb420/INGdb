@@ -15,12 +15,6 @@ from .logging_utils import setup_logging
 logger = logging.getLogger(__name__)
 
 engine = sqlalchemy.create_engine(DATABASE_URL)
-ts = TimeSeries(key=API_KEYS["ALPHA_VANTAGE"], output_format="pandas")
-reddit = Reddit(
-    client_id=API_KEYS["REDDIT_CLIENT_ID"],
-    client_secret=API_KEYS["REDDIT_CLIENT_SECRET"],
-    user_agent="ti-app",
-)
 
 
 def _handle_error(msg: str, exc: Exception) -> None:
