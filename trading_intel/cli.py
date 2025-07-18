@@ -4,13 +4,8 @@ import subprocess
 import sys
 from pathlib import Path
 
-from .config import LOG_FILE
+from .logging_utils import setup_logging
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    filename=LOG_FILE if LOG_FILE else None,
-)
 logger = logging.getLogger(__name__)
 
 
@@ -42,6 +37,7 @@ def status():
 
 
 if __name__ == "__main__":
+    setup_logging()
     if len(sys.argv) < 2:
         logger.error("usage: cli.py [start|stop|status]")
     elif sys.argv[1] == "start":
