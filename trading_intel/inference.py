@@ -3,6 +3,7 @@ import time
 
 import numpy as np
 import onnxruntime as ort
+import pandas as pd
 import sqlalchemy
 
 from .config import DATABASE_URL, LOG_FILE
@@ -26,7 +27,7 @@ while True:
     fetch_eth_chain()
     fetch_reddit()
     create_features()
-    df = sqlalchemy.read_sql("features", engine).iloc[-1:]
+    df = pd.read_sql("features", engine).iloc[-1:]
     features = ["price_diff", "ema_12", "sentiment_score"]
     X = np.expand_dims(
         df[features].values.astype(np.float32),
