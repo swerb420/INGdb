@@ -1,0 +1,15 @@
+pandas
+numpy
+sqlalchemy
+psycopg2-binary
+requests
+ccxt
+alpha_vantage
+praw
+web3
+python-dotenv
+networkx
+vaderSentiment
+scikit-learn
+torch
+onnxruntime
