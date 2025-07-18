@@ -1,5 +1,6 @@
 import logging
 import time
+from pathlib import Path
 
 import numpy as np
 import onnxruntime as ort
@@ -18,7 +19,8 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 engine = sqlalchemy.create_engine(DATABASE_URL)
-sess = ort.InferenceSession("lstm_model.onnx")
+onnx_path = Path(__file__).resolve().parent / "lstm_model.onnx"
+sess = ort.InferenceSession(str(onnx_path))
 
 while True:
     t0 = time.time()

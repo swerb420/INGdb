@@ -2,6 +2,7 @@
 import logging
 import subprocess
 import sys
+from pathlib import Path
 
 from .config import LOG_FILE
 
@@ -14,9 +15,11 @@ logger = logging.getLogger(__name__)
 
 
 def start():
+    project_dir = Path(__file__).resolve().parent
     cmd = (
-        "(crontab -l 2>/dev/null; echo '@hourly cd ~/trading_intel && python "
-        "inference.py >> inference.log 2>&1') | crontab -"
+        "(crontab -l 2>/dev/null; echo '@hourly cd "
+        f"{project_dir} && {sys.executable} inference.py "
+        ">> inference.log 2>&1') | crontab -"
     )
     subprocess.run(cmd, shell=True)
     logger.info("\u2705 Scheduled hourly inference (crontab added).")
