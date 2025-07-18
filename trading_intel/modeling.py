@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 
 import pandas as pd
 import sqlalchemy
@@ -16,6 +17,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 engine = sqlalchemy.create_engine(DATABASE_URL)
+lstm_path = Path(__file__).resolve().parent / "lstm.pth"
 
 
 class SimpleLSTM(nn.Module):
@@ -46,7 +48,7 @@ def train():
         loss = criterion(model(X_train).squeeze(), y_train)
         loss.backward()
         optimizer.step()
-    torch.save(model.state_dict(), "lstm.pth")
+    torch.save(model.state_dict(), lstm_path)
     logger.info("\U0001f389 Model trained, loss: %s", loss.item())
 
 
