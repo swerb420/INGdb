@@ -4,6 +4,8 @@ import subprocess
 import sys
 from pathlib import Path
 
+from typing import List, Optional
+
 from .config import LOG_FILE
 
 logging.basicConfig(
@@ -41,12 +43,26 @@ def status():
     logger.info("\U0001f4cb Crontab:\n%s", out.stdout)
 
 
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        logger.error("usage: cli.py [start|stop|status]")
-    elif sys.argv[1] == "start":
-        start(sys.argv[2] if len(sys.argv) > 2 else None)
-    elif sys.argv[1] == "stop":
+def main(argv: Optional[List[str]] = None) -> int:
+    """Dispatch CLI commands."""
+    if argv is None:
+        argv = sys.argv[1:]
+    if not argv:
+        print("usage: ti-cli [start|stop|status]", file=sys.stderr)
+        return 1
+
+    cmd = argv[0]
+    if cmd == "start":
+        start()
+    elif cmd == "stop":
         stop()
-    else:
+    elif cmd == "status":
         status()
+    else:
+        print(f"unknown command: {cmd}", file=sys.stderr)
+        return 1
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
