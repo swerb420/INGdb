@@ -34,5 +34,10 @@ model_prepared(torch.randn(1, 1, 3))
 model_int8 = torch.quantization.convert(model_prepared)
 
 dummy = torch.randn(1, 1, 3)
-torch.onnx.export(model_int8, dummy, base_dir / "lstm_model.onnx", opset_version=13)
+torch.onnx.export(
+    model_int8,
+    dummy,
+    base_dir / "lstm_model.onnx",
+    opset_version=13,
+)
 logger.info("\u2705 ONNX export complete.")

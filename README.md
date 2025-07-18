@@ -29,6 +29,25 @@ This project ingests price and social sentiment data, builds features, trains a 
    - `REDDIT_CLIENT_ID`
    - `REDDIT_CLIENT_SECRET`
 
+### Apple Silicon (M-series)
+Torch and ONNXRuntime wheels for macOS on Apple Silicon are often CPU only. If
+`pip` is unable to find compatible wheels, install the CPU builds directly or
+use `conda`:
+
+```bash
+pip install --index-url https://download.pytorch.org/whl/cpu torch
+pip install onnxruntime
+```
+
+Alternatively with conda:
+
+```bash
+conda install pytorch onnxruntime -c pytorch -c conda-forge
+```
+
+Some Python versions may not have pre-built wheels available, requiring a
+source build of one or both packages.
+
 ## Usage
 ### Ingestion
 Downloads crypto, stock, on-chain and reddit data and writes them to the database:
