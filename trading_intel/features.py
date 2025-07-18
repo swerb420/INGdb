@@ -9,6 +9,7 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
 engine = sqlalchemy.create_engine(DATABASE_URL)
 vader = SentimentIntensityAnalyzer()
 
