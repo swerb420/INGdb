@@ -22,7 +22,7 @@ model.eval()
 supported = torch.backends.quantized.supported_engines
 backend = "fbgemm" if "fbgemm" in supported else "qnnpack"
 torch.backends.quantized.engine = backend
-print(f"Using quantization backend: {backend}")
+logger.info("Using quantization backend: %s", backend)
 model.qconfig = torch.quantization.get_default_qconfig(backend)
 model_prepared = torch.quantization.prepare(model)
 model_prepared(torch.randn(1, 1, 3))

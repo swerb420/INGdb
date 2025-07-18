@@ -8,7 +8,7 @@ model training and optimization.
 `optimize.py` automatically selects a quantization backend based on the
 engines available in `torch.backends.quantized.supported_engines`.
 If `fbgemm` is supported it will be used; otherwise `qnnpack` is selected.
-The chosen backend is printed when running the script.
+The chosen backend is logged when running the script.
 
 This project ingests price and social sentiment data, builds features, trains a model and exposes an inference loop.
 
