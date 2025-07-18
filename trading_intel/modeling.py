@@ -1,8 +1,10 @@
 import torch, torch.nn as nn
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from config import DATABASE_URL
+from config import DATABASE_URL, validate_env
 import sqlalchemy
+
+validate_env()
 
 engine = sqlalchemy.create_engine(DATABASE_URL)
 

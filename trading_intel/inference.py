@@ -1,8 +1,10 @@
 import onnxruntime as ort, numpy as np
 from ingestion import fetch_crypto, fetch_reddit, fetch_stock, fetch_eth_chain
 from features import create_features
-from config import DATABASE_URL
+from config import DATABASE_URL, validate_env
 import sqlalchemy, time
+
+validate_env()
 
 engine = sqlalchemy.create_engine(DATABASE_URL)
 sess = ort.InferenceSession("lstm_model.onnx")

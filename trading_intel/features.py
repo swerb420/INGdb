@@ -1,6 +1,8 @@
 import pandas as pd, numpy as np, sqlalchemy, networkx as nx
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-from config import DATABASE_URL
+from config import DATABASE_URL, validate_env
+
+validate_env()
 
 engine = sqlalchemy.create_engine(DATABASE_URL)
 vader = SentimentIntensityAnalyzer()

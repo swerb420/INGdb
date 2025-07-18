@@ -4,7 +4,9 @@ from praw import Reddit
 from web3 import Web3
 from datetime import datetime
 from psycopg2 import sql
-from config import DATABASE_URL, API_KEYS
+from config import DATABASE_URL, API_KEYS, validate_env
+
+validate_env()
 
 engine = sqlalchemy.create_engine(DATABASE_URL)
 ts = TimeSeries(key=API_KEYS["ALPHA_VANTAGE"], output_format='pandas')
