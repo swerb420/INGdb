@@ -1,15 +1,12 @@
 import logging
 from pathlib import Path
 
-from .logging_utils import setup_logging
-
 import torch
 import torch.nn.utils.prune as prune
 import torch.quantization
 
 from .logging_utils import setup_logging
 from .modeling import SimpleLSTM
-from .logging_utils import setup_logging
 
 logger = logging.getLogger(__name__)
 setup_logging()
