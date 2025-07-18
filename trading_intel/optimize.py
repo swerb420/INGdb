@@ -1,6 +1,8 @@
 import logging
 from pathlib import Path
 
+from .logging_utils import setup_logging
+
 import torch
 import torch.nn.utils.prune as prune
 import torch.quantization
@@ -13,7 +15,7 @@ setup_logging()
 base_dir = Path(__file__).resolve().parent
 lstm_path = base_dir / "lstm.pth"
 if not lstm_path.exists():
-    logger.error("Model state not found at %s", lstm_path)
+    logger.error("LSTM state not found at %s", lstm_path)
     raise SystemExit(1)
 state = torch.load(lstm_path)
 

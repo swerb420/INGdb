@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 from sklearn.model_selection import train_test_split
 
-from .config import DATABASE_URL
+from .config import DATABASE_URL, validate_env
 from .logging_utils import setup_logging
 
 logger = logging.getLogger(__name__)
@@ -50,5 +50,6 @@ def train():
 
 
 if __name__ == "__main__":
+    validate_env()
     setup_logging()
     train()

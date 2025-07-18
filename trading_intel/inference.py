@@ -7,7 +7,7 @@ import onnxruntime as ort
 import pandas as pd
 import sqlalchemy
 
-from .config import DATABASE_URL
+from .config import DATABASE_URL, validate_env
 from .features import create_features
 from .ingestion import fetch_crypto, fetch_eth_chain, fetch_reddit, fetch_stock
 from .logging_utils import setup_logging
@@ -43,5 +43,6 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    validate_env()
     setup_logging()
     main()

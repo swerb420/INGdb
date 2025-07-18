@@ -9,7 +9,7 @@ from alpha_vantage.timeseries import TimeSeries
 from praw import Reddit
 from web3 import Web3
 
-from .config import API_KEYS, DATABASE_URL
+from .config import API_KEYS, DATABASE_URL, validate_env
 from .logging_utils import setup_logging
 
 logger = logging.getLogger(__name__)
@@ -196,6 +196,7 @@ def fetch_reddit(sub: str = "CryptoCurrency", limit: int = 50) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
+    validate_env()
     setup_logging()
     fetch_crypto()
     fetch_stock()
