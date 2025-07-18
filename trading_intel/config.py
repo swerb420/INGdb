@@ -11,7 +11,6 @@ API_KEYS = {
     "REDDIT_CLIENT_SECRET": os.getenv("REDDIT_CLIENT_SECRET", ""),
 }
 
-
 def validate_env() -> None:
     """Ensure all critical environment variables are present.
 
@@ -37,4 +36,8 @@ def validate_env() -> None:
             f"Missing required environment variables: {joined}. "
             "Set them in your environment or in a '.env' file."
         )
+
+=======
+# Optional log file path for logging.basicConfig
+LOG_FILE = os.getenv("LOG_FILE", "")
 
