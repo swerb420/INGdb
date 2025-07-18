@@ -18,7 +18,7 @@ def start():
     project_dir = Path(__file__).resolve().parent
     cmd = (
         "(crontab -l 2>/dev/null; echo '@hourly cd "
-        f"{project_dir} && {sys.executable} inference.py "
+        f"{project_dir} && {sys.executable} -m trading_intel.inference "
         ">> inference.log 2>&1') | crontab -"
     )
     subprocess.run(cmd, shell=True)
@@ -26,7 +26,7 @@ def start():
 
 
 def stop():
-    cmd = "crontab -l | grep -v 'inference.py' | crontab -"
+    cmd = "crontab -l | grep -v 'trading_intel.inference' | crontab -"
     subprocess.run(cmd, shell=True)
     logger.info("\U0001f6d1 Stopped hourly inference.")
 

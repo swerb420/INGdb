@@ -57,7 +57,7 @@ python trading_intel/optimize.py
 ### Inference
 Runs an hourly loop of data ingestion, feature creation and ONNX inference:
 ```bash
-python trading_intel/inference.py
+python -m trading_intel.inference
 ```
 You can also schedule this loop via the CLI:
 ```bash

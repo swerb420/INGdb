@@ -22,19 +22,26 @@ engine = sqlalchemy.create_engine(DATABASE_URL)
 onnx_path = Path(__file__).resolve().parent / "lstm_model.onnx"
 sess = ort.InferenceSession(str(onnx_path))
 
-while True:
-    t0 = time.time()
-    fetch_crypto()
-    fetch_stock()
-    fetch_eth_chain()
-    fetch_reddit()
-    create_features()
-    df = pd.read_sql("features", engine).iloc[-1:]
-    features = ["price_diff", "ema_12", "sentiment_score"]
-    X = np.expand_dims(
-        df[features].values.astype(np.float32),
-        axis=1,
-    )
-    pred = sess.run(None, {"input": X})[0].squeeze()
-    logger.info("%s \u2192 Prediction: %s", time.asctime(), pred)
-    time.sleep(max(0, 3600 - (time.time() - t0)))
+
+def main() -> None:
+    """Run the hourly inference loop."""
+    while True:
+        t0 = time.time()
+        fetch_crypto()
+        fetch_stock()
+        fetch_eth_chain()
+        fetch_reddit()
+        create_features()
+        df = pd.read_sql("features", engine).iloc[-1:]
+        features = ["price_diff", "ema_12", "sentiment_score"]
+        X = np.expand_dims(
+            df[features].values.astype(np.float32),
+            axis=1,
+        )
+        pred = sess.run(None, {"input": X})[0].squeeze()
+        logger.info("%s \u2192 Prediction: %s", time.asctime(), pred)
+        time.sleep(max(0, 3600 - (time.time() - t0)))
+
+
+if __name__ == "__main__":
+    main()
