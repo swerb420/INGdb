@@ -12,7 +12,6 @@ vaderSentiment
 scikit-learn
 torch
 onnxruntime
-pytest
 black
 flake8
 isort

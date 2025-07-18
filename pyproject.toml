@@ -26,8 +26,10 @@ dependencies = [
     "scikit-learn",
     "torch",
     "onnxruntime",
-    "pytest",
 ]
+
+[project.optional-dependencies]
+dev = ["pytest"]
 
 [project.scripts]
 ti-cli = "trading_intel.cli:main"

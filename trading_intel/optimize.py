@@ -8,13 +8,15 @@ import torch.quantization
 from .modeling import SimpleLSTM
 
 logger = logging.getLogger(__name__)
+setup_logging()
 
 base_dir = Path(__file__).resolve().parent
-state_path = base_dir / "lstm.pth"
-if not state_path.exists():
-    logger.error("LSTM state not found at %s", state_path)
+lstm_path = base_dir / "lstm.pth"
+if not lstm_path.exists():
+    logger.error("Model state not found at %s", lstm_path)
     raise SystemExit(1)
-state = torch.load(state_path)
+state = torch.load(lstm_path)
+
 model = SimpleLSTM(input_dim=3)
 model.load_state_dict(state)
 
