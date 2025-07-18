@@ -10,7 +10,11 @@ prune.l1_unstructured(model.lstm, name="weight_ih_l0", amount=0.5)
 prune.remove(model.lstm, 'weight_ih_l0')
 
 model.eval()
-model.qconfig = torch.quantization.get_default_qconfig('fbgemm')
+supported = torch.backends.quantized.supported_engines
+backend = 'fbgemm' if 'fbgemm' in supported else 'qnnpack'
+torch.backends.quantized.engine = backend
+print(f"Using quantization backend: {backend}")
+model.qconfig = torch.quantization.get_default_qconfig(backend)
 model_prepared = torch.quantization.prepare(model)
 model_prepared(torch.randn(1,1,3))
 model_int8 = torch.quantization.convert(model_prepared)
