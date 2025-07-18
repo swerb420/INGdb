@@ -3,16 +3,8 @@ import logging
 import subprocess
 import sys
 from pathlib import Path
+from .logging_utils import setup_logging
 
-from typing import List, Optional
-
-from .config import LOG_FILE
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    filename=LOG_FILE if LOG_FILE else None,
-)
 logger = logging.getLogger(__name__)
 
 
@@ -43,18 +35,13 @@ def status():
     logger.info("\U0001f4cb Crontab:\n%s", out.stdout)
 
 
-def main(argv: Optional[List[str]] = None) -> int:
-    """Dispatch CLI commands."""
-    if argv is None:
-        argv = sys.argv[1:]
-    if not argv:
-        print("usage: ti-cli [start|stop|status]", file=sys.stderr)
-        return 1
-
-    cmd = argv[0]
-    if cmd == "start":
-        start()
-    elif cmd == "stop":
+if __name__ == "__main__":
+    setup_logging()
+    if len(sys.argv) < 2:
+        logger.error("usage: cli.py [start|stop|status]")
+    elif sys.argv[1] == "start":
+        start(sys.argv[2] if len(sys.argv) > 2 else None)
+    elif sys.argv[1] == "stop":
         stop()
     elif cmd == "status":
         status()

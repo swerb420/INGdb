@@ -4,13 +4,9 @@ import pandas as pd
 import sqlalchemy
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
-from .config import DATABASE_URL, LOG_FILE
+from .config import DATABASE_URL
+from .logging_utils import setup_logging
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    filename=LOG_FILE if LOG_FILE else None,
-)
 logger = logging.getLogger(__name__)
 
 
@@ -45,4 +41,5 @@ def create_features():
 
 
 if __name__ == "__main__":
+    setup_logging()
     create_features()
