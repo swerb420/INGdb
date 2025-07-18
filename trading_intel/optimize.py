@@ -9,9 +9,14 @@ from .logging_utils import setup_logging
 from .modeling import SimpleLSTM
 
 logger = logging.getLogger(__name__)
+setup_logging()
 
 base_dir = Path(__file__).resolve().parent
-state = torch.load(base_dir / "lstm.pth")
+lstm_path = base_dir / "lstm.pth"
+if not lstm_path.exists():
+    logger.error("Model state not found at %s", lstm_path)
+    raise SystemExit(1)
+state = torch.load(lstm_path)
 model = SimpleLSTM(input_dim=3)
 model.load_state_dict(state)
 
