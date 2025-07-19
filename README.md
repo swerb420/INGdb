@@ -28,6 +28,10 @@ This project ingests price and social sentiment data, builds features, trains a 
    - `FRED_API_KEY`
    - `REDDIT_CLIENT_ID`
    - `REDDIT_CLIENT_SECRET`
+4. Initialize the database tables (run once before ingestion):
+   ```bash
+   python -m trading_intel.init_db
+   ```
 
 ### Apple Silicon (M-series)
 Torch and ONNXRuntime wheels for macOS on Apple Silicon are often CPU only. If
