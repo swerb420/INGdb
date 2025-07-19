@@ -1,6 +1,7 @@
 import logging
 import time
 from datetime import datetime
+import asyncio
 
 import pandas as pd
 import requests
@@ -282,13 +283,30 @@ def fetch_reddit(sub: str = "CryptoCurrency", limit: int = 50) -> pd.DataFrame:
     return pd.DataFrame()
 
 
+async def fetch_all() -> dict[str, pd.DataFrame]:
+    """Fetch all data sources concurrently."""
+    fetchers = {
+        "crypto": fetch_crypto,
+        "stock": fetch_stock,
+        "yfinance": fetch_yfinance,
+        "fred": fetch_fred,
+        "eth_chain": fetch_eth_chain,
+        "dune": fetch_dune,
+        "reddit": fetch_reddit,
+    }
+
+    async def run(name: str, func) -> tuple[str, pd.DataFrame]:
+        return name, await asyncio.to_thread(func)
+
+    tasks = [run(n, f) for n, f in fetchers.items()]
+    results: dict[str, pd.DataFrame] = {}
+    for coro in asyncio.as_completed(tasks):
+        name, df = await coro
+        results[name] = df
+    return results
+
+
 if __name__ == "__main__":
     validate_env()
     setup_logging()
-    fetch_crypto()
-    fetch_stock()
-    fetch_yfinance()
-    fetch_fred()
-    fetch_eth_chain()
-    fetch_dune()
-    fetch_reddit()
+    asyncio.run(fetch_all())

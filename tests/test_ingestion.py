@@ -2,6 +2,7 @@ import os
 import sys
 
 import pandas as pd
+import asyncio
 
 os.environ.setdefault("ALPHA_VANTAGE_API_KEY", "test")
 os.environ.setdefault("FRED_API_KEY", "test")
@@ -70,3 +71,28 @@ def test_fetch_dune_error(monkeypatch):
     df = ingestion.fetch_dune(1)
     assert isinstance(df, pd.DataFrame)
     assert df.empty
+
+
+def test_fetch_all(monkeypatch):
+    def ok(*args, **kwargs):
+        return pd.DataFrame({"x": [1]})
+
+    monkeypatch.setattr(ingestion, "fetch_crypto", ok)
+    monkeypatch.setattr(ingestion, "fetch_stock", ok)
+    monkeypatch.setattr(ingestion, "fetch_yfinance", ok)
+    monkeypatch.setattr(ingestion, "fetch_fred", ok)
+    monkeypatch.setattr(ingestion, "fetch_eth_chain", ok)
+    monkeypatch.setattr(ingestion, "fetch_dune", ok)
+    monkeypatch.setattr(ingestion, "fetch_reddit", ok)
+
+    results = asyncio.run(ingestion.fetch_all())
+    assert set(results) == {
+        "crypto",
+        "stock",
+        "yfinance",
+        "fred",
+        "eth_chain",
+        "dune",
+        "reddit",
+    }
+    assert all(isinstance(df, pd.DataFrame) for df in results.values())
