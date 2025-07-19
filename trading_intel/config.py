@@ -17,6 +17,7 @@ API_KEYS = {
     "FRED": os.getenv("FRED_API_KEY", ""),
     "REDDIT_CLIENT_ID": os.getenv("REDDIT_CLIENT_ID", ""),
     "REDDIT_CLIENT_SECRET": os.getenv("REDDIT_CLIENT_SECRET", ""),
+    "DUNE": os.getenv("DUNE_API_KEY", ""),
 }
 
 
