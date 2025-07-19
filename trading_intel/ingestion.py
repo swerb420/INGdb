@@ -1,7 +1,7 @@
+import asyncio
 import logging
 import time
 from datetime import datetime
-import asyncio
 
 import pandas as pd
 import requests

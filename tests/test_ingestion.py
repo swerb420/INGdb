@@ -1,8 +1,8 @@
+import asyncio
 import os
 import sys
 
 import pandas as pd
-import asyncio
 
 os.environ.setdefault("ALPHA_VANTAGE_API_KEY", "test")
 os.environ.setdefault("FRED_API_KEY", "test")
