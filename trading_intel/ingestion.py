@@ -5,6 +5,8 @@ from datetime import datetime
 import pandas as pd
 import requests
 import sqlalchemy
+from dune_client.client import DuneClient
+from dune_client.query import QueryBase
 from web3 import Web3
 
 from .config import API_KEYS, DATABASE_URL, validate_env
@@ -99,6 +101,68 @@ def fetch_stock(symbol: str = "AAPL") -> pd.DataFrame:
     return pd.DataFrame()
 
 
+# yfinance
+def fetch_yfinance(symbol: str = "SPY", period: str = "1mo") -> pd.DataFrame:
+    """Fetch historical stock data using the yfinance library.
+
+    Parameters
+    ----------
+    symbol: str
+        Stock ticker symbol.
+    period: str
+        Data period, defaults to one month.
+
+    Returns
+    -------
+    pandas.DataFrame
+        Price data or an empty DataFrame on failure.
+    """
+    try:
+        import yfinance as yf
+
+        ticker = yf.Ticker(symbol)
+        df = ticker.history(period=period)
+        if df.empty:
+            raise RuntimeError("No data returned")
+        df = df.reset_index().rename(columns={"Date": "timestamp"})
+        df["symbol"] = symbol
+        df["type"] = "yfinance"
+        df.to_sql("price_data", engine, if_exists="append", index=False)
+        logger.info("Fetched yfinance data for %s", symbol)
+        return df
+    except Exception as exc:  # noqa: BLE001
+        _handle_error("Failed to fetch yfinance data", exc)
+        return pd.DataFrame()
+
+
+# FRED
+def fetch_fred(series: str = "DEXUSAL") -> pd.DataFrame:
+    """Fetch a macroeconomic series from FRED."""
+    api_key = API_KEYS.get("FRED", "")
+    if not api_key:
+        _handle_error("FRED_API_KEY not configured", Exception("missing key"))
+        return pd.DataFrame()
+    url = "https://api.stlouisfed.org/fred/series/observations"
+    params = {"series_id": series, "api_key": api_key, "file_type": "json"}
+    try:
+        resp = requests.get(url, params=params, timeout=10)
+        resp.raise_for_status()
+        data = resp.json().get("observations", [])
+        df = pd.DataFrame(data)
+        if df.empty:
+            raise RuntimeError("No observations")
+        df = df.rename(columns={"value": "price", "date": "timestamp"})
+        df["timestamp"] = pd.to_datetime(df["timestamp"])
+        df["symbol"] = series
+        df["type"] = "fred"
+        df.to_sql("price_data", engine, if_exists="append", index=False)
+        logger.info("Fetched FRED data for %s", series)
+        return df
+    except Exception as exc:  # noqa: BLE001
+        _handle_error("Failed to fetch FRED data", exc)
+        return pd.DataFrame()
+
+
 # On-chain (Ethereum)
 def fetch_eth_chain() -> pd.DataFrame:
     """Fetch the latest Ethereum block information."""
@@ -137,6 +201,37 @@ def fetch_eth_chain() -> pd.DataFrame:
         Exception("max retries"),
     )
     return pd.DataFrame()
+
+
+# Dune Analytics
+def fetch_dune(query_id: int = 0) -> pd.DataFrame:
+    """Fetch query results from Dune Analytics.
+
+    Parameters
+    ----------
+    query_id: int
+        The ID of the Dune query to run.
+
+    Returns
+    -------
+    pandas.DataFrame
+        Query results or an empty DataFrame on failure.
+    """
+    api_key = API_KEYS.get("DUNE", "")
+    if not api_key:
+        _handle_error("DUNE_API_KEY not configured", Exception("missing key"))
+        return pd.DataFrame()
+    try:
+        client = DuneClient(api_key)
+        query = QueryBase(query_id=query_id)
+        df = client.run_query_dataframe(query)
+        df["query_id"] = query_id
+        df.to_sql("dune_data", engine, if_exists="append", index=False)
+        logger.info("Fetched Dune data for query %s", query_id)
+        return df
+    except Exception as exc:  # noqa: BLE001
+        _handle_error("Failed to fetch Dune data", exc)
+        return pd.DataFrame()
 
 
 # Reddit
@@ -192,5 +287,8 @@ if __name__ == "__main__":
     setup_logging()
     fetch_crypto()
     fetch_stock()
+    fetch_yfinance()
+    fetch_fred()
     fetch_eth_chain()
+    fetch_dune()
     fetch_reddit()

@@ -4,6 +4,8 @@ sqlalchemy
 psycopg2-binary
 requests
 alpha_vantage
+yfinance
+fredapi
 praw
 web3
 python-dotenv
@@ -16,3 +18,4 @@ black
 flake8
 isort
 pre-commit
+dune-client
