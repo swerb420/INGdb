@@ -48,6 +48,13 @@ conda install pytorch onnxruntime -c pytorch -c conda-forge
 Some Python versions may not have pre-built wheels available, requiring a
 source build of one or both packages.
 
+`psycopg2-binary` may also lack pre-built wheels on Apple Silicon. Install
+PostgreSQL headers (e.g., `brew install postgresql`) and build `psycopg2` from
+source:
+```bash
+pip install psycopg2
+```
+
 ## Usage
 ### Ingestion
 Downloads crypto, stock, on-chain and reddit data and writes them to the database:
