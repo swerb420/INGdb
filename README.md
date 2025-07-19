@@ -103,9 +103,10 @@ pre-commit run --all-files
 ```
 
 ### Testing
-Execute the unit tests with `pytest`:
+Install the package with development dependencies and run the tests:
 
 ```bash
+pip install -e .[dev]
 pytest
 ```
 
